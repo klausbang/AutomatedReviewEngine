@@ -1,0 +1,41 @@
+# Automated Review Engine Configuration
+
+# Application Settings
+app:
+  name: "Automated Review Engine"
+  version: "0.1.0-MVP"
+  debug: true
+  
+# Document Processing Settings
+document_processing:
+  max_file_size_mb: 50
+  supported_formats:
+    - "pdf"
+    - "docx"
+  temp_directory: "data/temp"
+  
+# Review Engine Settings
+review_engine:
+  default_timeout_seconds: 300
+  max_concurrent_reviews: 5
+  
+# PLM Integration Settings
+plm:
+  search_modes:
+    - "document_search"
+    - "product_search"
+    - "item_search"
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/are.log"
+  
+# Streamlit Configuration
+streamlit:
+  max_upload_size: 200  # MB
+  theme:
+    primaryColor: "#1f77b4"
+    backgroundColor: "#ffffff"
+    secondaryBackgroundColor: "#f0f2f6"
