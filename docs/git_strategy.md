@@ -54,6 +54,67 @@ Each phase and subphase gets a dedicated commit with:
 
 ## Current Git History
 
+### Git Graph Visualization
+
+```mermaid
+gitgraph
+    commit id: "Initial Setup"
+    commit id: "69433f3: Phase 1 setup" tag: "v0.1.0"
+    commit id: "d361437: Phase 1 docs"
+    commit id: "cf2c585: Phase 2.1 complete" tag: "v0.2.1"
+    commit id: "5981dfa: Git strategy docs"
+    branch phase-2-2
+    checkout phase-2-2
+    commit id: "Phase 2.2: Config & Logging" tag: "v0.2.2"
+    checkout main
+    merge phase-2-2
+    commit id: "Phase 2.3: Testing" tag: "v0.2.3"
+    commit id: "Phase 2 Complete" tag: "v0.2.0"
+    branch phase-3
+    checkout phase-3
+    commit id: "Phase 3.1: UI Foundation" tag: "v0.3.1"
+    commit id: "Phase 3.2: Review Logic" tag: "v0.3.2"
+    checkout main
+    merge phase-3
+    commit id: "Phase 3 Complete" tag: "v0.3.0"
+    commit id: "MVP Release" tag: "v1.0.0"
+```
+
+### Detailed Git Timeline
+
+```mermaid
+timeline
+    title Automated Review Engine - Git History
+    
+    section Phase 1: Foundation
+        July 21, 2025 : Initial project setup
+                      : 69433f3 - Project structure
+                      : d361437 - Architecture docs
+                      : Tag v0.1.0 - Phase 1 Complete
+    
+    section Phase 2: Core Engine
+        July 21, 2025 : cf2c585 - Document processing
+                      : Tag v0.2.1 - Phase 2.1 Complete
+                      : 5981dfa - Git strategy docs
+        
+        Future       : Phase 2.2 - Configuration
+                     : Tag v0.2.2
+                     : Phase 2.3 - Testing
+                     : Tag v0.2.3
+                     : Tag v0.2.0 - Phase 2 Complete
+    
+    section Phase 3: UI & Logic
+        Future       : Phase 3.1 - UI Foundation
+                     : Tag v0.3.1
+                     : Phase 3.2 - Review Logic
+                     : Tag v0.3.2
+                     : Tag v0.3.0 - Phase 3 Complete
+    
+    section Release
+        Future       : MVP Testing & Deployment
+                     : Tag v1.0.0 - MVP Release
+```
+
 ### Commits and Tags
 
 #### Phase 1: Project Setup and Architecture
@@ -64,6 +125,9 @@ Each phase and subphase gets a dedicated commit with:
 #### Phase 2.1: Document Processing Foundation
 - **Commit**: `cf2c585` - feat: Complete Phase 2.1 - Document Processing Foundation
 - **Tag**: `v0.2.1` - Phase 2.1 Complete: Document Processing Foundation
+
+#### Documentation
+- **Commit**: `5981dfa` - docs: Add Git strategy and archiving documentation
 
 ### Files Archived by Phase
 
