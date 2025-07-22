@@ -1,0 +1,37 @@
+Sample Text Document for Testing
+
+This is a sample text document that can be used for testing the Automated Review Engine.
+
+The document contains multiple paragraphs with various types of content to test different 
+processing capabilities of the system.
+
+Key Features to Test:
+- Text extraction and processing
+- Content analysis and review
+- File handling and validation
+- Error detection and reporting
+
+Technical Requirements:
+1. The system should be able to process this document without errors
+2. Extract meaningful content from the text
+3. Provide appropriate feedback and analysis
+4. Handle various file formats gracefully
+
+Sample Content Types:
+- Plain text paragraphs
+- Numbered lists
+- Bullet points
+- Technical terminology
+- Mixed formatting
+
+This document serves as a baseline for testing the core functionality of the 
+Automated Review Engine's document processing capabilities.
+
+Additional test scenarios should include:
+• Large documents (>1MB)
+• Documents with special characters: àáâãäåæçèéêë
+• Documents with numbers: 123.456, $789.00, 42%
+• Documents with URLs: https://example.com
+• Documents with email addresses: test@example.com
+
+End of sample document.

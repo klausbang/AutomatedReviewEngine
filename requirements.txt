@@ -17,12 +17,17 @@ pathlib2>=2.3.7
 python-magic>=0.4.27
 openpyxl>=3.1.0
 
+# Configuration and Logging
+pyyaml>=6.0.1
+psutil>=5.9.0
+
 # Testing
 pytest>=7.4.0
 pytest-cov>=4.1.0
 
-# Configuration
-pyyaml>=6.0.1
+# Development Tools
+black>=23.0.0
+flake8>=6.0.0
 python-dotenv>=1.0.0
 
 # Logging and Monitoring

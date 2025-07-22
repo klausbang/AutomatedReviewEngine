@@ -1,0 +1,187 @@
+{
+  "document_metadata": {
+    "title": "Sample JSON Document",
+    "description": "Test document for JSON processing validation",
+    "version": "1.0.0",
+    "created_date": "2025-01-22T09:30:00Z",
+    "author": "Automated Review Engine Test Suite",
+    "document_type": "test_data",
+    "tags": ["testing", "json", "validation", "sample"]
+  },
+  "content_sections": [
+    {
+      "section_id": "introduction",
+      "title": "Introduction",
+      "content": "This JSON document serves as test data for the Automated Review Engine's JSON processing capabilities.",
+      "priority": "high",
+      "word_count": 18
+    },
+    {
+      "section_id": "technical_specs",
+      "title": "Technical Specifications",
+      "content": "The system must handle various JSON data types including strings, numbers, booleans, arrays, and nested objects.",
+      "priority": "high",
+      "word_count": 20,
+      "subsections": [
+        {
+          "title": "Data Types",
+          "examples": {
+            "string": "This is a string value",
+            "number": 42,
+            "float": 3.14159,
+            "boolean": true,
+            "null_value": null,
+            "array": [1, 2, 3, "four", 5.0],
+            "nested_object": {
+              "property1": "value1",
+              "property2": 123,
+              "property3": {
+                "deep_property": "deep_value"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "section_id": "test_scenarios",
+      "title": "Test Scenarios",
+      "content": "Various scenarios to validate JSON processing robustness.",
+      "test_cases": [
+        {
+          "case_id": "special_characters",
+          "description": "Text with special characters",
+          "data": "Testing special chars: àáâãäåæçèéêë ñóöõôø ÿüûú",
+          "expected_result": "successful_processing"
+        },
+        {
+          "case_id": "unicode_symbols",
+          "description": "Unicode symbols and emojis",
+          "data": "Symbols: ★☆♠♣♥♦ Arrows: →←↑↓ Math: ∑∆∇∂",
+          "expected_result": "successful_processing"
+        },
+        {
+          "case_id": "large_numbers",
+          "description": "Various number formats",
+          "data": {
+            "integer": 9007199254740991,
+            "negative": -12345,
+            "scientific": 1.23e-10,
+            "percentage": 0.95,
+            "currency": 1234.56
+          },
+          "expected_result": "successful_processing"
+        },
+        {
+          "case_id": "empty_values",
+          "description": "Handling empty and null values",
+          "data": {
+            "empty_string": "",
+            "empty_array": [],
+            "empty_object": {},
+            "null_value": null,
+            "zero": 0,
+            "false_value": false
+          },
+          "expected_result": "successful_processing"
+        }
+      ]
+    },
+    {
+      "section_id": "validation_rules",
+      "title": "Validation Rules",
+      "content": "Rules for validating JSON document processing",
+      "rules": [
+        {
+          "rule_id": "structure_validation",
+          "description": "Validate JSON structure integrity",
+          "criteria": [
+            "Valid JSON syntax",
+            "Proper nesting levels",
+            "Correct data type usage",
+            "No circular references"
+          ]
+        },
+        {
+          "rule_id": "content_validation", 
+          "description": "Validate content quality and completeness",
+          "criteria": [
+            "Non-empty required fields",
+            "Appropriate data ranges",
+            "Valid date/time formats",
+            "Proper encoding handling"
+          ]
+        },
+        {
+          "rule_id": "security_validation",
+          "description": "Security-related validation checks",
+          "criteria": [
+            "No malicious code injection",
+            "Safe character handling",
+            "Appropriate file size limits",
+            "Input sanitization"
+          ]
+        }
+      ]
+    }
+  ],
+  "performance_metrics": {
+    "expected_processing_time_ms": 50,
+    "max_memory_usage_mb": 10,
+    "supported_file_sizes": {
+      "min_bytes": 1,
+      "max_bytes": 52428800,
+      "optimal_range": "1KB - 10MB"
+    }
+  },
+  "error_simulation": {
+    "malformed_json_examples": [
+      "{ \"key\": \"value\", }",
+      "{ key: \"value\" }",
+      "{ \"key\": \"unclosed string }",
+      "{ \"key\": value }"
+    ],
+    "edge_cases": {
+      "very_long_string": "This is a very long string that should test the system's ability to handle large text content within JSON structures without causing memory issues or processing delays that could impact overall system performance and user experience during document processing operations.",
+      "deep_nesting": {
+        "level1": {
+          "level2": {
+            "level3": {
+              "level4": {
+                "level5": {
+                  "level6": {
+                    "level7": {
+                      "level8": {
+                        "level9": {
+                          "level10": "Deep nesting test successful"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "large_array": [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+        31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+        41, 42, 43, 44, 45, 46, 47, 48, 49, 50
+      ]
+    }
+  },
+  "summary": {
+    "total_sections": 4,
+    "total_test_cases": 4,
+    "total_validation_rules": 3,
+    "complexity_level": "intermediate",
+    "estimated_processing_time": "under 100ms",
+    "file_size_kb": 3.2,
+    "character_count": 3847,
+    "creation_timestamp": "2025-01-22T09:30:00.000Z",
+    "checksum": "sha256:sample_checksum_value_for_testing"
+  }
+}

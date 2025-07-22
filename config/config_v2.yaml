@@ -1,0 +1,110 @@
+# Automated Review Engine - Comprehensive Configuration
+# Version 0.2.2 - Phase 2.2 Configuration and Logging System
+
+# Environment settings
+environment: development
+debug_mode: false
+version: "0.2.2"
+
+# Database configuration
+database:
+  type: sqlite
+  host: localhost
+  port: 5432
+  name: automated_review_engine
+  username: ""
+  password: ""
+  connection_timeout: 30
+  pool_size: 5
+
+# File handling configuration
+files:
+  upload_directory: data/uploads
+  temp_directory: data/temp
+  max_file_size_mb: 50
+  allowed_extensions:
+    - ".pdf"
+    - ".docx"
+  cleanup_temp_files: true
+  temp_file_retention_hours: 24
+
+# Document processing configuration
+processing:
+  pdf_extraction_method: dual  # pdfplumber, pypdf2, dual
+  extract_images: false
+  extract_metadata: true
+  extract_structure: true
+  language_detection: true
+  ocr_enabled: false
+  max_processing_time_minutes: 10
+
+# Validation configuration
+validation:
+  enable_security_checks: true
+  enable_content_validation: true
+  enable_compliance_checking: true
+  malware_scanning: false
+  max_validation_time_minutes: 5
+  strict_mode: false
+
+# Logging configuration
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_enabled: true
+  file_path: logs/application.log
+  file_max_size_mb: 10
+  file_backup_count: 5
+  console_enabled: true
+  structured_logging: false
+
+# User interface configuration
+ui:
+  streamlit_port: 8501
+  streamlit_host: localhost
+  theme: default
+  page_title: "Automated Review Engine"
+  page_icon: "📋"
+  layout: wide
+  sidebar_state: expanded
+
+# Security configuration
+security:
+  enable_authentication: false
+  session_timeout_minutes: 30
+  max_login_attempts: 3
+  enable_audit_logging: true
+  require_https: false
+  cors_enabled: false
+
+# Performance configuration
+performance:
+  max_concurrent_uploads: 5
+  max_concurrent_processing: 3
+  memory_limit_mb: 1024
+  enable_caching: true
+  cache_directory: data/cache
+  cache_expiry_hours: 24
+
+# Custom application settings
+custom_settings:
+  # Regulatory compliance settings
+  regulatory_framework: "EU Medical Devices Regulation"
+  compliance_standards:
+    - "ISO 13485"
+    - "EU MDR"
+    - "FDA 21 CFR"
+  default_language: "en"
+  enable_experimental_features: false
+  
+  # Review engine settings (backward compatibility)
+  review_engine:
+    default_timeout_seconds: 300
+    max_concurrent_reviews: 5
+    
+  # PLM integration settings (backward compatibility)
+  plm:
+    search_modes:
+      - "document_search"
+      - "product_search"
+      - "item_search"
