@@ -1,16 +1,18 @@
 # Automated Review Engine Requirements
+# Phase 3.1: UI Foundation Dependencies
 
-# Core Framework
+# Core Framework & UI
 streamlit>=1.28.0
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.17.0  # For interactive charts
+altair>=5.1.0   # For Streamlit native charts
 
 # Document Processing
 python-docx>=1.1.0
 PyPDF2>=3.0.1
 pdfplumber>=0.10.0
-
-# Data Processing
-pandas>=2.0.0
-numpy>=1.24.0
+pymupdf>=1.23.0  # Enhanced PDF processing
 
 # File Handling and Utilities
 pathlib2>=2.3.7
@@ -20,23 +22,34 @@ openpyxl>=3.1.0
 # Configuration and Logging
 pyyaml>=6.0.1
 psutil>=5.9.0
+loguru>=0.7.0
 
-# Testing
+# Testing Framework
 pytest>=7.4.0
 pytest-cov>=4.1.0
-
-# Development Tools
-black>=23.0.0
-flake8>=6.0.0
-python-dotenv>=1.0.0
-
-# Logging and Monitoring
-loguru>=0.7.0
+pytest-timeout>=2.1.0
+pytest-xdist>=3.3.0
 
 # Development Tools
 black>=23.0.0
 flake8>=6.0.0
 isort>=5.12.0
+python-dotenv>=1.0.0
 
-# Optional: For enhanced PDF processing
-pymupdf>=1.23.0  # Alternative PDF processor
+# UI Enhancement Libraries
+streamlit-extras>=0.3.0  # Additional Streamlit components
+streamlit-option-menu>=0.3.6  # Enhanced navigation
+st-annotated-text>=4.0.0  # Text annotation
+streamlit-aggrid>=0.3.4  # Advanced data grids
+
+# Additional Data Visualization
+seaborn>=0.12.0
+matplotlib>=3.7.0
+
+# Security & Validation
+cryptography>=41.0.0  # For file encryption
+validators>=0.22.0     # Input validation
+
+# Performance & Caching
+diskcache>=5.6.0      # Disk-based caching
+memory-profiler>=0.60.0  # Memory monitoring

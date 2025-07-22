@@ -1,76 +1,52 @@
 """
-Automated Review Engine (ARE) - Main Application Entry Point
+Streamlit App Entry Point - Automated Review Engine
 
-This is the main Streamlit application for the Automated Review Engine,
-designed for regulatory document review in medical device companies.
+Main entry point for the Streamlit web application.
+Run with: streamlit run app.py
 
-Author: Development Team
-Date: July 2025
+Phase 3.1: UI Foundation - Application Entry Point
 """
 
 import streamlit as st
 import sys
 from pathlib import Path
 
-# Add src directory to Python path
+# Add project paths
 project_root = Path(__file__).parent
-src_path = project_root / "src"
-sys.path.insert(0, str(src_path))
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "src"))
 
-# Import application modules (will be created in later phases)
-# from ui.main_interface import main_app
+# Import main interface
+try:
+    from src.ui.main_interface import MainInterface
+except ImportError as e:
+    st.error(f"Failed to import main interface: {e}")
+    st.stop()
+
 
 def main():
     """Main application entry point"""
-    st.set_page_config(
-        page_title="Automated Review Engine",
-        page_icon="📋",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-    
-    st.title("🔍 Automated Review Engine (ARE)")
-    st.subheader("Regulatory Document Review System")
-    
-    # Placeholder for MVP development
-    st.info("📝 **Development Status**: Phase 1 - Project Setup Complete")
-    
-    st.markdown("""
-    ### Welcome to the Automated Review Engine
-    
-    This system is designed to automate the review of regulatory documents 
-    for medical device companies, with a focus on EU Declaration of Conformity.
-    
-    **Current MVP Features in Development:**
-    - 📄 PDF and MS Word document processing
-    - 📋 Template-based structure validation
-    - 🔍 Review script execution
-    - 📊 PLM search directions generation
-    - 📈 Comprehensive review reporting
-    
-    **System Status:** 
-    - ✅ Project structure initialized
-    - ✅ Dependencies configured
-    - 🔄 Core components in development
-    """)
-    
-    # Development progress indicator
-    st.markdown("---")
-    st.markdown("### 🚧 Development Progress")
-    
-    progress_data = {
-        "Phase 1 - Setup": 100,
-        "Phase 2 - Infrastructure": 0,
-        "Phase 3 - Analysis Engine": 0,
-        "Phase 4 - Streamlit UI": 0,
-        "Phase 5 - Review Engine": 0,
-        "Phase 6 - Integration": 0,
-        "Phase 7 - Documentation": 0,
-        "Phase 8 - Launch": 0,
-    }
-    
-    for phase, progress in progress_data.items():
-        st.progress(progress / 100, text=f"{phase}: {progress}%")
+    try:
+        # Create and run main interface
+        app = MainInterface()
+        app.run()
+        
+    except Exception as e:
+        st.error(f"Application startup failed: {e}")
+        st.markdown("### � Troubleshooting")
+        st.markdown("""
+        This error typically occurs when:
+        1. Core infrastructure components are not initialized
+        2. Required dependencies are missing
+        3. Configuration files are not accessible
+        
+        **Solution Steps:**
+        1. Ensure all Phase 2 components are properly installed
+        2. Run: `pip install -r requirements.txt`
+        3. Verify configuration files exist in the config/ directory
+        4. Check that all module imports are working correctly
+        """)
+
 
 if __name__ == "__main__":
     main()
