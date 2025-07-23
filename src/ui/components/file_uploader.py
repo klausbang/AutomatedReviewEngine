@@ -26,10 +26,15 @@ try:
     from src.core.validation_utils import DataValidator
     from src.core.logging_manager import LoggingManager
     from src.core.error_handler import ErrorHandler
+    # Import Phase 3.2 document analyzer for compatibility checking
+    from src.review.document_analyzer import DocumentAnalyzer
+    DOCUMENT_ANALYZER_AVAILABLE = True
 except ImportError:
     DataValidator = None
     LoggingManager = None
     ErrorHandler = None
+    DocumentAnalyzer = None
+    DOCUMENT_ANALYZER_AVAILABLE = False
 
 
 class FileUploader:
@@ -230,6 +235,19 @@ class FileUploader:
                     return file_info
                 
                 file_info['warnings'].extend(validation_result.warnings)
+            
+            # Phase 3.2 DocumentAnalyzer compatibility check
+            if DOCUMENT_ANALYZER_AVAILABLE:
+                analyzer_result = self._validate_document_analyzer_compatibility(tmp_path)
+                if not analyzer_result['compatible']:
+                    file_info['errors'].extend(analyzer_result['errors'])
+                    return file_info
+                
+                if analyzer_result['warnings']:
+                    file_info['warnings'].extend(analyzer_result['warnings'])
+                
+                # Add analyzer metadata
+                file_info['analyzer_metadata'] = analyzer_result['metadata']
             
             # Generate file hash
             if self.config['enable_hash_validation']:
@@ -439,6 +457,72 @@ class FileUploader:
             return self._process_single_file(uploaded_file, key_suffix)
         
         return None
+    
+    def _validate_document_analyzer_compatibility(self, file_path: Path) -> Dict[str, Any]:
+        """
+        Validate file compatibility with DocumentAnalyzer from Phase 3.2
+        
+        Args:
+            file_path: Path to the file to validate
+            
+        Returns:
+            Dict with compatibility results
+        """
+        result = {
+            'compatible': True,
+            'errors': [],
+            'warnings': [],
+            'metadata': {}
+        }
+        
+        try:
+            # Test DocumentAnalyzer initialization
+            analyzer = DocumentAnalyzer()
+            
+            # Test file reading capability
+            test_result = analyzer.analyze_document(str(file_path))
+            
+            if not test_result:
+                result['compatible'] = False
+                result['errors'].append("Document cannot be processed by the review engine")
+                return result
+            
+            # Check if analysis was successful
+            if not test_result.success:
+                result['compatible'] = False
+                result['errors'].append(f"Document analysis failed: {test_result.error_message or 'Unknown error'}")
+                return result
+            
+            # Extract metadata from analysis
+            result['metadata'] = {
+                'document_type': test_result.document_type,
+                'page_count': getattr(test_result.metadata, 'page_count', 'Unknown'),
+                'extraction_method': getattr(test_result, 'extraction_method', 'Standard'),
+                'text_extracted': bool(test_result.text_content),
+                'text_length': len(test_result.text_content) if test_result.text_content else 0
+            }
+            
+            # Add warnings for potential issues
+            if test_result.extraction_errors:
+                result['warnings'].extend([
+                    f"Text extraction issue: {error}" for error in test_result.extraction_errors[:3]
+                ])
+            
+            # Check text quality
+            if test_result.text_content:
+                text_length = len(test_result.text_content.strip())
+                if text_length < 100:
+                    result['warnings'].append("Document contains very little extractable text")
+                elif text_length > 1000000:  # 1MB of text
+                    result['warnings'].append("Document is very large and may take longer to process")
+            else:
+                result['warnings'].append("No text content could be extracted from document")
+            
+        except Exception as e:
+            result['compatible'] = False
+            result['errors'].append(f"DocumentAnalyzer compatibility check failed: {str(e)}")
+        
+        return result
 
 
 # Factory function
