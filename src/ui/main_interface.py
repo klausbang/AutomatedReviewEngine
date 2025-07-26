@@ -5,6 +5,7 @@ This module contains the main Streamlit interface components and navigation
 for the Automated Review Engine application.
 
 Phase 3.1: UI Foundation - Main Interface Implementation
+Phase 4.1 Day 3: Performance Optimization & Polish
 """
 
 import streamlit as st
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 import time
+import functools
 
 # Add project paths
 project_root = Path(__file__).parent.parent.parent
@@ -32,6 +34,7 @@ try:
     from src.ui.components.results_panel import create_results_panel
     from src.ui.components.config_panel import create_config_panel
     from src.ui.components.file_uploader import create_file_uploader
+    from src.ui.components.performance_monitor import create_performance_monitor
     
     PHASE_4_1_COMPONENTS_AVAILABLE = True
 except ImportError as e:
@@ -40,24 +43,73 @@ except ImportError as e:
     PHASE_4_1_COMPONENTS_AVAILABLE = False
 
 
+# Phase 4.1 Day 3: Performance optimization decorators
+@st.cache_resource
+def get_cached_component(component_type: str):
+    """Cache component instances for better performance"""
+    if component_type == "review_panel":
+        return create_review_panel()
+    elif component_type == "progress_display":
+        return create_progress_display()
+    elif component_type == "results_panel":
+        return create_results_panel()
+    elif component_type == "config_panel":
+        return create_config_panel()
+    elif component_type == "file_uploader":
+        return create_file_uploader()
+    else:
+        raise ValueError(f"Unknown component type: {component_type}")
+
+def performance_monitor(func):
+    """Decorator to monitor component performance"""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        try:
+            result = func(*args, **kwargs)
+            execution_time = time.time() - start_time
+            
+            # Log performance if logger available
+            if hasattr(args[0], 'logger') and args[0].logger:
+                args[0].logger.debug(f"{func.__name__} executed in {execution_time:.3f}s")
+            
+            # Store performance metrics in session state
+            if 'performance_metrics' not in st.session_state:
+                st.session_state.performance_metrics = {}
+            st.session_state.performance_metrics[func.__name__] = execution_time
+            
+            return result
+        except Exception as e:
+            execution_time = time.time() - start_time
+            if hasattr(args[0], 'logger') and args[0].logger:
+                args[0].logger.error(f"{func.__name__} failed after {execution_time:.3f}s: {e}")
+            raise
+    return wrapper
+
+
 class MainInterface:
     """Main interface controller for the Streamlit application"""
     
     def __init__(self):
-        """Initialize the main interface"""
+        """Initialize the main interface with performance optimizations"""
         self.config = None
         self.logger = None
         self.error_handler = None
         self.validator = None
         self.page_config_set = False
         
+        # Phase 4.1 Day 3: Component cache
+        self._component_cache = {}
+        self._last_cache_clear = time.time()
+        self._cache_timeout = 300  # 5 minutes
+        
         # Initialize session state
         self._initialize_session_state()
         
-        # Initialize core components
+        # Initialize core components (cached)
         self._initialize_core_components()
         
-        # Phase 4.1: Initialize integrated components
+        # Phase 4.1: Initialize integrated components (lazy loading)
         if PHASE_4_1_COMPONENTS_AVAILABLE:
             self._initialize_phase_4_1_components()
     
@@ -109,33 +161,45 @@ class MainInterface:
             st.error(f"Failed to initialize core components: {e}")
             st.session_state.app_initialized = False
     
+    @performance_monitor  
     def _initialize_phase_4_1_components(self):
-        """Initialize Phase 4.1 integrated components"""
+        """Initialize Phase 4.1 integrated components with lazy loading"""
         try:
-            # Initialize component instances
-            self.review_panel = create_review_panel()
-            self.progress_display = create_progress_display()
-            self.results_panel = create_results_panel()
-            self.config_panel = create_config_panel()
-            self.file_uploader = create_file_uploader(
-                config=None,  # Will use defaults
-                logger=self.logger,
-                validator=self.validator
-            )
+            # Lazy initialization - only create when needed
+            if not hasattr(self, '_phase_4_1_initialized'):
+                # Use cached components for better performance
+                self.review_panel = get_cached_component("review_panel")
+                self.progress_display = get_cached_component("progress_display") 
+                self.results_panel = get_cached_component("results_panel")
+                self.config_panel = get_cached_component("config_panel")
+                self.file_uploader = get_cached_component("file_uploader")
+                
+                # Initialize Phase 4.1 session state
+                phase_4_1_state = {
+                    'current_review_status': None,
+                    'review_configuration': {},
+                    'uploaded_document': None,
+                    'results_history': [],
+                    'show_advanced_config': False,
+                    'active_review_id': None,
+                    'performance_metrics': {},
+                    'cache_status': 'active'
+                }
+                
+                for key, value in phase_4_1_state.items():
+                    if key not in st.session_state:
+                        st.session_state[key] = value
+                
+                self._phase_4_1_initialized = True
+                
+                if self.logger:
+                    self.logger.info("✅ Phase 4.1 components initialized with lazy loading")
             
-            # Initialize Phase 4.1 session state
-            phase_4_1_state = {
-                'current_review_status': None,
-                'review_configuration': {},
-                'uploaded_document': None,
-                'results_history': [],
-                'show_advanced_config': False,
-                'active_review_id': None
-            }
-            
-            for key, value in phase_4_1_state.items():
-                if key not in st.session_state:
-                    st.session_state[key] = value
+        except Exception as e:
+            error_msg = f"Failed to initialize Phase 4.1 components: {str(e)}"
+            st.error(f"❌ {error_msg}")
+            if self.logger:
+                self.logger.error(error_msg, exc_info=True)
             
             self.logger.info("Phase 4.1 components initialized successfully")
             
@@ -247,6 +311,11 @@ class MainInterface:
             
             st.markdown("---")
             
+            # Phase 4.1 Day 3: Performance monitoring in sidebar
+            self._render_sidebar_performance()
+            
+            st.markdown("---")
+            
             # System status
             self._render_system_status()
     
@@ -263,6 +332,31 @@ class MainInterface:
         
         for label, value in stats.items():
             st.text(f"{label}: {value}")
+    
+    def _render_sidebar_performance(self):
+        """Render performance monitoring in sidebar - Phase 4.1 Day 3"""
+        try:
+            performance_monitor = create_performance_monitor()
+            performance_monitor.render_performance_dashboard(show_details=False)
+        except Exception as e:
+            # Fallback performance display
+            with st.expander("📊 Performance", expanded=False):
+                if 'app_performance' in st.session_state and st.session_state.app_performance:
+                    latest = st.session_state.app_performance[-1]
+                    render_time = latest.get('render_time', 0)
+                    memory_usage = latest.get('memory_usage', 0)
+                    
+                    if render_time < 1.0:
+                        st.success(f"⚡ Fast ({render_time:.2f}s)")
+                    elif render_time < 3.0:
+                        st.warning(f"⏱️ Fair ({render_time:.2f}s)")
+                    else:
+                        st.error(f"🐌 Slow ({render_time:.2f}s)")
+                    
+                    if memory_usage > 0:
+                        st.info(f"💾 {memory_usage:.1f} MB")
+                else:
+                    st.info("📊 Collecting metrics...")
     
     def _render_system_status(self):
         """Render system status indicators"""
@@ -413,53 +507,6 @@ class MainInterface:
         else:
             # Fallback to legacy interface
             self._render_legacy_review_interface()
-            # File information
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.info(f"**File Name:** {uploaded_file.name}")
-                st.info(f"**File Size:** {uploaded_file.size:,} bytes")
-                st.info(f"**File Type:** {uploaded_file.type}")
-            
-            with col2:
-                if self.validator:
-                    # Validate file using Phase 2 validator
-                    file_config = {
-                        'max_file_size_mb': 50,
-                        'allowed_extensions': ['.pdf', '.docx', '.doc'],
-                        'enable_security_checks': True
-                    }
-                    
-                    # For demonstration, create a temp file
-                    import tempfile
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.name.split('.')[-1]}") as tmp_file:
-                        tmp_file.write(uploaded_file.read())
-                        tmp_path = Path(tmp_file.name)
-                    
-                    try:
-                        validation_result = self.validator.validate_file_upload(tmp_path, file_config)
-                        
-                        if validation_result.is_valid:
-                            st.success("✅ File validation passed")
-                            
-                            if st.button("Add to Review Queue", key="add_to_queue"):
-                                st.session_state.uploaded_files.append({
-                                    'name': uploaded_file.name,
-                                    'size': uploaded_file.size,
-                                    'type': uploaded_file.type,
-                                    'upload_time': datetime.now(),
-                                    'status': 'queued'
-                                })
-                                st.success(f"✅ {uploaded_file.name} added to review queue!")
-                                st.rerun()
-                        else:
-                            st.error(f"❌ File validation failed: {validation_result.errors}")
-                    
-                    finally:
-                        # Clean up temp file
-                        tmp_path.unlink(missing_ok=True)
-                else:
-                    st.warning("⚠️ Validator not available")
         
         # Display uploaded files
         if st.session_state.uploaded_files:
@@ -567,11 +614,11 @@ class MainInterface:
                 st.line_chart(chart_data)
     
     def _render_settings_page(self):
-        """Render the settings page"""
+        """Render the settings page with performance monitoring"""
         st.markdown("## ⚙️ Application Settings")
         
-        # Settings tabs
-        tab1, tab2, tab3, tab4 = st.tabs(["🔧 General", "📄 Document", "🔒 Security", "📊 Advanced"])
+        # Settings tabs - Phase 4.1 Day 3 Enhanced
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["🔧 General", "📄 Document", "🔒 Security", "📊 Performance", "🛠️ Advanced"])
         
         with tab1:
             st.markdown("### General Settings")
@@ -609,13 +656,38 @@ class MainInterface:
                 st.success("✅ Security settings saved!")
         
         with tab4:
+            st.markdown("### Performance Monitoring")
+            
+            # Phase 4.1 Day 3: Performance monitoring dashboard
+            try:
+                performance_monitor = create_performance_monitor()
+                performance_monitor.render_performance_dashboard(show_details=True)
+            except Exception as e:
+                st.error(f"Failed to load performance monitor: {e}")
+                st.info("Performance monitoring features will be available after full initialization")
+        
+        with tab5:
             st.markdown("### Advanced Settings")
             
             debug_mode = st.checkbox("Enable debug mode", value=False, key="debug_mode_setting")
             api_timeout = st.number_input("API timeout (seconds)", min_value=5, max_value=300, value=30, key="api_timeout_setting")
             cache_size = st.number_input("Cache size (MB)", min_value=10, max_value=1000, value=100, key="cache_size_setting")
             
+            # Phase 4.1 Day 3: Performance tuning options
+            st.markdown("#### Performance Optimization")
+            enable_caching = st.checkbox("Enable component caching", value=True, key="enable_caching_setting")
+            lazy_loading = st.checkbox("Enable lazy loading", value=True, key="lazy_loading_setting")
+            performance_monitoring = st.checkbox("Enable performance monitoring", value=True, key="perf_monitoring_setting")
+            
             if st.button("💾 Save Advanced Settings", key="save_advanced"):
+                st.session_state.user_settings.update({
+                    'debug_mode': debug_mode,
+                    'api_timeout': api_timeout,
+                    'cache_size': cache_size,
+                    'enable_caching': enable_caching,
+                    'lazy_loading': lazy_loading,
+                    'performance_monitoring': performance_monitoring
+                })
                 st.success("✅ Advanced settings saved!")
         
         # Reset all settings
@@ -736,11 +808,18 @@ class MainInterface:
         with col3:
             st.markdown(f"**Last Updated:** {datetime.now().strftime('%H:%M:%S')}")
     
+    @performance_monitor  
     def run(self):
-        """Main application run method"""
+        """Main application run method with performance optimization"""
         try:
-            # Configure page
+            # Phase 4.1 Day 3: Performance optimization
+            start_time = time.time()
+            
+            # Configure page (cached)
             self.configure_page()
+            
+            # Periodic cache management
+            self._manage_cache_lifecycle()
             
             # Render header
             self.render_header()
@@ -748,14 +827,29 @@ class MainInterface:
             # Create layout
             self.render_sidebar()
             
-            # Render main content
+            # Render main content (optimized)
             self.render_main_content()
             
             # Render footer
             self.render_footer()
             
-            # Update activity timestamp
+            # Update activity timestamp and performance metrics
             st.session_state.last_activity = datetime.now()
+            
+            # Track overall performance
+            total_time = time.time() - start_time
+            if 'app_performance' not in st.session_state:
+                st.session_state.app_performance = []
+            
+            st.session_state.app_performance.append({
+                'timestamp': datetime.now(),
+                'render_time': total_time,
+                'memory_usage': self._get_memory_usage()
+            })
+            
+            # Keep only last 10 measurements
+            if len(st.session_state.app_performance) > 10:
+                st.session_state.app_performance = st.session_state.app_performance[-10:]
             
         except Exception as e:
             if self.error_handler:
@@ -765,6 +859,31 @@ class MainInterface:
                     self.logger.error(f"Application error: {error_context.message}")
             else:
                 st.error(f"Application Error: {str(e)}")
+    
+    def _manage_cache_lifecycle(self):
+        """Manage cache lifecycle for memory optimization"""
+        current_time = time.time()
+        
+        # Clear cache every 10 minutes
+        if (current_time - self._last_cache_clear) > 600:  # 10 minutes
+            self._clear_component_cache()
+            
+            # Clear old session data
+            if 'app_performance' in st.session_state:
+                # Keep only last 5 performance metrics
+                st.session_state.app_performance = st.session_state.app_performance[-5:]
+            
+            if self.logger:
+                self.logger.debug("Periodic cache cleanup completed")
+    
+    def _get_memory_usage(self):
+        """Get current memory usage (simplified)"""
+        try:
+            import psutil
+            process = psutil.Process()
+            return process.memory_info().rss / 1024 / 1024  # MB
+        except ImportError:
+            return 0  # psutil not available
     
     # Phase 4.1: New integrated page methods
     
