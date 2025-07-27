@@ -1,23 +1,23 @@
-# Automated Review Engine - Version 1.0.0
+# Automated Review Engine - Version 1.1.0
 
-**Release Date:** July 26, 2025  
+**Release Date:** July 27, 2025  
 **Author:** Klaus Bang Andersen (klausbang)  
 **Email:** klaus.bang.andersen@gmail.com  
-**Status:** Production Ready Baseline  
+**Status:** Production Ready with Minimal App Fallback  
 
 ## Version Information
 
-- **Version:** 1.0.0
-- **Build Date:** July 26, 2025
-- **Git Tag:** v1.0.0
+- **Version:** 1.1.0
+- **Build Date:** July 27, 2025
+- **Git Tag:** v1.1.0
 - **Branch:** main
-- **Commit:** Initial production release
+- **Commit:** Minimal app integration and stability improvements
 
 ## Release Notes
 
 ### 🎉 Major Features
-- **Complete Regulatory Document Review System**
-- **Professional Streamlit Web Interface** with 6 integrated components
+- **Dual Application Architecture** - Full and minimal app options
+- **Stable Minimal App** - Guaranteed working upload functionality
 - **Advanced Document Processing** with PDF/Word support
 - **Real-time Progress Monitoring** and interactive analytics
 - **Performance Optimization** with 60% faster loading

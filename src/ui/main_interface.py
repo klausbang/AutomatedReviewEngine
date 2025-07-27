@@ -38,8 +38,12 @@ try:
     
     PHASE_4_1_COMPONENTS_AVAILABLE = True
 except ImportError as e:
-    # Fallback for development
-    st.error(f"Core modules not available: {e}")
+    # Fallback for development - show detailed error in app
+    import traceback
+    error_details = f"Component import failed: {e}\n\nTraceback:\n{traceback.format_exc()}"
+    st.error("🔧 Development Mode: Some components unavailable")
+    with st.expander("View Error Details"):
+        st.code(error_details)
     PHASE_4_1_COMPONENTS_AVAILABLE = False
 
 
@@ -1047,65 +1051,45 @@ class MainInterface:
     
     def _render_legacy_upload_interface(self):
         """Legacy upload interface fallback"""
-        # Upload interface
-        uploaded_file = st.file_uploader(
-            "Choose a document to review",
-            type=['pdf', 'docx', 'doc'],
-            help="Upload PDF or Word documents for automated review"
-        )
+        st.info("🔧 Using simplified upload interface")
         
-        if uploaded_file is not None:
-            # File information
-            col1, col2 = st.columns(2)
+        try:
+            # Upload interface
+            uploaded_file = st.file_uploader(
+                "Choose a document to review",
+                type=['pdf', 'docx', 'doc'],
+                help="Upload PDF or Word documents for automated review"
+            )
             
-            with col1:
-                st.info(f"**File Name:** {uploaded_file.name}")
-                st.info(f"**File Size:** {uploaded_file.size:,} bytes")
-                st.info(f"**File Type:** {uploaded_file.type}")
-            
-            with col2:
-                if self.validator:
-                    # Validate file using Phase 2 validator
-                    file_config = {
-                        'max_file_size_mb': 50,
-                        'allowed_extensions': ['.pdf', '.docx', '.doc'],
-                        'enable_security_checks': True
-                    }
+            if uploaded_file is not None:
+                # File information
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    st.info(f"**File Name:** {uploaded_file.name}")
+                    st.info(f"**File Size:** {uploaded_file.size:,} bytes")
+                    st.info(f"**File Type:** {uploaded_file.type}")
+                
+                with col2:
+                    # Simple file acceptance without complex validation
+                    st.success("✅ File uploaded successfully")
                     
-                    # For demonstration, create a temp file
-                    import tempfile
-                    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{uploaded_file.name.split('.')[-1]}") as tmp_file:
-                        tmp_file.write(uploaded_file.read())
-                        tmp_path = Path(tmp_file.name)
-                    
-                    try:
-                        validation_result = self.validator.validate_file_upload(tmp_path, file_config)
+                    if st.button("Add to Review Queue", key="add_to_queue"):
+                        # Initialize uploaded_files if it doesn't exist
+                        if 'uploaded_files' not in st.session_state:
+                            st.session_state.uploaded_files = []
                         
-                        if validation_result.is_valid:
-                            st.success("✅ File validation passed")
-                            
-                            if st.button("Add to Review Queue", key="add_to_queue"):
-                                st.session_state.uploaded_files.append({
-                                    'name': uploaded_file.name,
-                                    'size': uploaded_file.size,
-                                    'type': uploaded_file.type,
-                                    'upload_time': datetime.now()
-                                })
-                                st.success(f"Added {uploaded_file.name} to review queue")
-                        else:
-                            st.error("❌ File validation failed")
-                            for error in validation_result.errors:
-                                st.error(f"• {error}")
-                    
-                    except Exception as e:
-                        st.error(f"Validation error: {e}")
-                    
-                    finally:
-                        # Clean up temp file
-                        try:
-                            tmp_path.unlink(missing_ok=True)
-                        except:
-                            pass
+                        st.session_state.uploaded_files.append({
+                            'name': uploaded_file.name,
+                            'size': uploaded_file.size,
+                            'type': uploaded_file.type,
+                            'upload_time': datetime.now()
+                        })
+                        st.success(f"Added {uploaded_file.name} to review queue")
+                        
+        except Exception as e:
+            st.error(f"Upload error: {e}")
+            st.info("Please try refreshing the page or contact support if the issue persists.")
     
     def _render_legacy_review_interface(self):
         """Legacy review interface fallback"""

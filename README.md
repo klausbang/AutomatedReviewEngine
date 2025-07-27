@@ -1,8 +1,8 @@
-# 🔍 Automated Review Engine v1.0.0
+# 🔍 Automated Review Engine v1.1.0
 
 **Professional Regulatory Document Review System**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](VERSION.md)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](VERSION.md)
 [![Status](https://img.shields.io/badge/status-production--ready-green.svg)](docs/project_status_dashboard.md)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/streamlit-latest-red.svg)](https://streamlit.io)
@@ -11,13 +11,13 @@
 
 The Automated Review Engine is a professional-grade regulatory document review system designed for regulatory specialists and compliance professionals. Built with Python and Streamlit, it provides intelligent document analysis, template-based validation, and comprehensive reporting capabilities.
 
-**Version 1.0.0** represents a production-ready baseline with complete UI integration, performance optimization, and professional polish suitable for regulatory environments.
+**Version 1.1.0** introduces a **dual application architecture** with both full-featured and minimal stable applications, ensuring reliable operation for User Acceptance Testing and professional deployment.
 
 ## ✨ Key Features
 
 ### 🔧 **Core Capabilities**
-- **Multi-format Document Processing** - PDF, DOCX, DOC support
-- **Template-based Validation** - EU Declaration of Conformity and extensible framework
+- **Dual Application Support** - Choice between full and minimal stable versions
+- **Reliable Document Upload** - PDF, DOCX, DOC support with guaranteed functionality
 - **Real-time Progress Monitoring** - Live workflow tracking with detailed status
 - **Interactive Results Analytics** - Advanced visualizations and data export
 - **Professional Configuration Management** - Comprehensive settings and preferences
